@@ -49,6 +49,19 @@ class Venue(db.Model):
     website_link = db.Column(db.String(500), nullable=True)
     seeking_talent = db.Column(db.Boolean(), nullable=True)
     seeking_description = db.Column(db.String(500), nullable=True)
+    @classmethod
+    def get_all(cls):
+      venues = cls.query.with_entities(cls.city,cls.state).group_by(cls.state,cls.city).all()
+      results = [
+        {
+        'city':venue.city,
+        'state':venue.state,
+        'venues': cls.get_by_city_state(state=venue.state,city=venue.city)
+        }
+        for venue in venues
+      ]
+      return results
+      
 
     def __repr__(self):
       return f'<Venue {self.id} {self.name}>'
@@ -100,17 +113,7 @@ def index():
 
 #  Venues
 #  ----------------------------------------------------------------
-def get_all(cls):
-  venues = cls.query.with_entities(cls.city,cls.state).group_by9cls.state,cls.city).all()
-  results = [
-    {
-    'city':venue.city,
-    'state':venue.state,
-    'venues': cls.get_by_city_state(state=venue.state,city=venue.city)
-    }
-    for venue in venues
-  ]
-  return results
+
 
 
 @app.route('/venues')
